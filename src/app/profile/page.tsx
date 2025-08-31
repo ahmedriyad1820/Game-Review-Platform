@@ -5,8 +5,10 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar'
 import { Button } from '@/components/ui/Button'
-import { Gamepad2, Star, Calendar, Users, Settings } from 'lucide-react'
+import { Gamepad2, Star, Calendar, Users, Settings, PenSquare } from 'lucide-react'
 import { EditProfileModal } from '@/components/profile/EditProfileModal'
+import { ReviewCard } from '@/components/reviews/ReviewCard'
+import Link from 'next/link'
 
 interface UserProfile {
   id: string
@@ -25,12 +27,37 @@ interface UserProfile {
   }
 }
 
+interface UserReview {
+  id: string
+  rating: number
+  title: string
+  excerpt: string
+  pros: string[]
+  cons: string[]
+  playtimeHours: number
+  upvotesCount: number
+  commentCount: number
+  createdAt: string
+  game: {
+    title: string
+    slug: string
+    coverUrl?: string
+  }
+  user: {
+    id: string
+    username: string
+    avatarUrl?: string
+  }
+}
+
 export default function ProfilePage() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [reviews, setReviews] = useState<UserReview[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState<'reviews' | 'lists' | 'activity'>('reviews')
 
   useEffect(() => {
     if (status === 'loading') return
@@ -40,26 +67,45 @@ export default function ProfilePage() {
       return
     }
 
-    // Fetch user profile data
-    const fetchProfile = async () => {
+    // Fetch user profile data and reviews
+    const fetchProfileData = async () => {
       try {
-        const response = await fetch(`/api/users/${session.user.id}`)
-        if (response.ok) {
-          const data = await response.json()
-          setProfile(data)
+        const [profileResponse, reviewsResponse] = await Promise.all([
+          fetch(`/api/users/${session.user.id}`),
+          fetch(`/api/reviews?userId=${session.user.id}`)
+        ])
+        
+        if (profileResponse.ok) {
+          const profileData = await profileResponse.json()
+          setProfile(profileData)
+        }
+        
+        if (reviewsResponse.ok) {
+          const reviewsData = await reviewsResponse.json()
+          setReviews(reviewsData.reviews || [])
         }
       } catch (error) {
-        console.error('Error fetching profile:', error)
+        console.error('Error fetching profile data:', error)
       } finally {
         setIsLoading(false)
       }
     }
 
-    fetchProfile()
+    fetchProfileData()
   }, [session, status, router])
 
   const handleProfileUpdate = (updatedProfile: UserProfile) => {
     setProfile(updatedProfile)
+  }
+
+  const handleReviewDelete = () => {
+    // Refresh reviews after deletion
+    if (session) {
+      fetch(`/api/reviews?userId=${session.user.id}`)
+        .then(res => res.json())
+        .then(data => setReviews(data.reviews || []))
+        .catch(console.error)
+    }
   }
 
   if (status === 'loading' || isLoading) {
@@ -177,29 +223,93 @@ export default function ProfilePage() {
         <div className="bg-card rounded-lg shadow-sm border">
           <div className="border-b">
             <nav className="flex space-x-8 px-6">
-              <button className="border-b-2 border-primary text-primary px-1 py-4 text-sm font-medium">
-                Reviews
+              <button 
+                className={`border-b-2 px-1 py-4 text-sm font-medium transition-colors ${
+                  activeTab === 'reviews' 
+                    ? 'border-primary text-primary' 
+                    : 'border-transparent text-muted-foreground hover:text-foreground'
+                }`}
+                onClick={() => setActiveTab('reviews')}
+              >
+                Reviews ({reviews.length})
               </button>
-              <button className="border-b-2 border-transparent text-muted-foreground hover:text-foreground px-1 py-4 text-sm font-medium">
+              <button 
+                className={`border-b-2 px-1 py-4 text-sm font-medium transition-colors ${
+                  activeTab === 'lists' 
+                    ? 'border-primary text-primary' 
+                    : 'border-transparent text-muted-foreground hover:text-foreground'
+                }`}
+                onClick={() => setActiveTab('lists')}
+              >
                 Lists
               </button>
-              <button className="border-b-2 border-transparent text-muted-foreground hover:text-foreground px-1 py-4 text-sm font-medium">
+              <button 
+                className={`border-b-2 px-1 py-4 text-sm font-medium transition-colors ${
+                  activeTab === 'activity' 
+                    ? 'border-primary text-primary' 
+                    : 'border-transparent text-muted-foreground hover:text-foreground'
+                }`}
+                onClick={() => setActiveTab('activity')}
+              >
                 Activity
               </button>
             </nav>
           </div>
           
           <div className="p-6">
-            <div className="text-center py-12">
-              <Gamepad2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-foreground mb-2">No reviews yet</h3>
-              <p className="text-muted-foreground mb-4">
-                Start reviewing games to build your profile and help other gamers discover great titles.
-              </p>
-              <Button>
-                Write Your First Review
-              </Button>
-            </div>
+            {activeTab === 'reviews' && (
+              <div>
+                {reviews.length > 0 ? (
+                  <div className="space-y-6">
+                    {reviews.map((review) => (
+                      <ReviewCard
+                        key={review.id}
+                        review={review}
+                        onEdit={() => {
+                          // Handle edit - redirect to edit page
+                          window.location.href = `/reviews/${review.id}/edit`
+                        }}
+                        onDelete={handleReviewDelete}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <Gamepad2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-foreground mb-2">No reviews yet</h3>
+                    <p className="text-muted-foreground mb-4">
+                      Start reviewing games to build your profile and help other gamers discover great titles.
+                    </p>
+                    <Link href="/games">
+                      <Button>
+                        <PenSquare className="h-4 w-4 mr-2" />
+                        Write Your First Review
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {activeTab === 'lists' && (
+              <div className="text-center py-12">
+                <Gamepad2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">Lists feature coming soon</h3>
+                <p className="text-muted-foreground">
+                  Create and share your game lists with the community.
+                </p>
+              </div>
+            )}
+            
+            {activeTab === 'activity' && (
+              <div className="text-center py-12">
+                <Gamepad2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">Activity feed coming soon</h3>
+                <p className="text-muted-foreground">
+                  Track your gaming activity and see what your friends are playing.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

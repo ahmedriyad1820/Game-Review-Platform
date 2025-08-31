@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import { prisma } from '@/lib/prisma'
+import prisma from '@/lib/prisma'
 import { GameCard } from '@/components/games/GameCard'
 import { SearchBar } from '@/components/ui/SearchBar'
 

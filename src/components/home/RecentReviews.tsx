@@ -15,6 +15,7 @@ const recentReviews = [
       coverUrl: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=100&h=100&fit=crop',
     },
     user: {
+      id: 'user1',
       username: 'RPGMaster',
       avatarUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face',
     },
@@ -36,6 +37,7 @@ const recentReviews = [
       coverUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=100&h=100&fit=crop',
     },
     user: {
+      id: 'user2',
       username: 'WebSlinger',
       avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face',
     },
@@ -57,6 +59,7 @@ const recentReviews = [
       coverUrl: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=100&h=100&fit=crop',
     },
     user: {
+      id: 'user3',
       username: 'HorrorFan',
       avatarUrl: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face',
     },

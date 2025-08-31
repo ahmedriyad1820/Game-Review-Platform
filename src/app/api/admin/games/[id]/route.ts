@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import prisma from '@/lib/prisma'
 
 // PUT /api/admin/games/[id] - Update a game
 export async function PUT(
@@ -7,6 +9,12 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Check authentication and admin role
+    const session = await getServerSession(authOptions)
+    if (!session || !session.user.roles.includes('ADMIN')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const { id } = params
     const body = await request.json()
     const {
@@ -45,6 +53,19 @@ export async function PUT(
       )
     }
 
+    // Validate and parse release date
+    let parsedReleaseDate = null
+    if (releaseDate && releaseDate.trim()) {
+      const date = new Date(releaseDate)
+      if (isNaN(date.getTime())) {
+        return NextResponse.json(
+          { error: 'Invalid release date format' },
+          { status: 400 }
+        )
+      }
+      parsedReleaseDate = date
+    }
+
     // Update the game
     const game = await prisma.game.update({
       where: { id },
@@ -52,7 +73,7 @@ export async function PUT(
         title,
         slug,
         descriptionMd: descriptionMd || '',
-        releaseDate: releaseDate ? new Date(releaseDate) : null,
+        releaseDate: parsedReleaseDate,
         developer: developer || '',
         publisher: publisher || '',
         genres: genres || [],
@@ -84,6 +105,12 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Check authentication and admin role
+    const session = await getServerSession(authOptions)
+    if (!session || !session.user.roles.includes('ADMIN')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const { id } = params
 
     // Check if game exists
@@ -93,7 +120,6 @@ export async function DELETE(
         _count: {
           select: {
             reviews: true,
-            lists: true,
           },
         },
       },
@@ -107,10 +133,10 @@ export async function DELETE(
     }
 
     // Check if game has associated content
-    if (game._count.reviews > 0 || game._count.lists > 0) {
+    if (game._count.reviews > 0) {
       return NextResponse.json(
         { 
-          error: 'Cannot delete game with associated reviews or lists. Please remove all associated content first.' 
+          error: 'Cannot delete game with associated reviews. Please remove all associated content first.' 
         },
         { status: 400 }
       )

@@ -78,8 +78,8 @@ export default function AdminGamesPage() {
         body: JSON.stringify({
           ...newGame,
           criticScore: newGame.criticScore ? parseFloat(newGame.criticScore) : null,
-          genres: newGame.genres.filter(g => g.trim()),
-          platforms: newGame.platforms.filter(p => p.trim()),
+          genres: newGame.genres.filter(g => g.trim() !== ''),
+          platforms: newGame.platforms.filter(p => p.trim() !== ''),
         }),
       })
 
@@ -107,8 +107,8 @@ export default function AdminGamesPage() {
         body: JSON.stringify({
           ...newGame,
           criticScore: newGame.criticScore ? parseFloat(newGame.criticScore) : null,
-          genres: newGame.genres.filter(g => g.trim()),
-          platforms: newGame.platforms.filter(p => p.trim()),
+          genres: newGame.genres.filter(g => g.trim() !== ''),
+          platforms: newGame.platforms.filter(p => p.trim() !== ''),
         }),
       })
 

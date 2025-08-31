@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import prisma from '@/lib/prisma'
 
 // GET /api/admin/games - List all games
 export async function GET() {
   try {
+    // Check authentication and admin role
+    const session = await getServerSession(authOptions)
+    if (!session || !session.user.roles.includes('ADMIN')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const games = await prisma.game.findMany({
       orderBy: { createdAt: 'desc' },
       include: {
@@ -28,6 +36,12 @@ export async function GET() {
 // POST /api/admin/games - Create a new game
 export async function POST(request: NextRequest) {
   try {
+    // Check authentication and admin role
+    const session = await getServerSession(authOptions)
+    if (!session || !session.user.roles.includes('ADMIN')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const body = await request.json()
     const {
       title,
@@ -62,13 +76,26 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Validate and parse release date
+    let parsedReleaseDate = null
+    if (releaseDate && releaseDate.trim()) {
+      const date = new Date(releaseDate)
+      if (isNaN(date.getTime())) {
+        return NextResponse.json(
+          { error: 'Invalid release date format' },
+          { status: 400 }
+        )
+      }
+      parsedReleaseDate = date
+    }
+
     // Create the game
     const game = await prisma.game.create({
       data: {
         title,
         slug,
         descriptionMd: descriptionMd || '',
-        releaseDate: releaseDate ? new Date(releaseDate) : null,
+        releaseDate: parsedReleaseDate,
         developer: developer || '',
         publisher: publisher || '',
         genres: genres || [],

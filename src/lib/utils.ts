@@ -7,13 +7,28 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 // Date formatting utilities
-export function formatDate(date: Date | string, formatStr: string = "PPP"): string {
+export function formatDate(date: Date | string | null | undefined, formatStr: string = "PPP"): string {
+  if (!date) return "N/A"
+  
   const dateObj = typeof date === "string" ? new Date(date) : date
+  
+  // Check if the date is valid
+  if (isNaN(dateObj.getTime())) {
+    return "N/A"
+  }
+  
   return format(dateObj, formatStr)
 }
 
-export function formatRelativeTime(date: Date | string): string {
+export function formatRelativeTime(date: Date | string | null | undefined): string {
+  if (!date) return "N/A"
+  
   const dateObj = typeof date === "string" ? new Date(date) : date
+  
+  // Check if the date is valid
+  if (isNaN(dateObj.getTime())) {
+    return "N/A"
+  }
   
   if (isToday(dateObj)) {
     return "Today"
