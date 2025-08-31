@@ -17,7 +17,12 @@ async function getGames() {
     })
 
     return games.map(game => ({
-      ...game,
+      id: game.id,
+      title: game.title,
+      slug: game.slug,
+      coverUrl: game.coverUrl || undefined,
+      genres: game.genres,
+      platforms: game.platforms,
       rating: game.reviews.length > 0 
         ? game.reviews.reduce((acc, review) => acc + review.rating, 0) / game.reviews.length
         : 0,

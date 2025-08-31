@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Star, ThumbsUp, MessageCircle, Clock, CheckCircle, XCircle } from 'lucide-react'
 import { cn, formatRelativeTime, formatPlaytime, getRatingColor } from '@/lib/utils'
+import { ReviewActions } from './ReviewActions'
 
 interface ReviewCardProps {
   review: {
@@ -14,6 +15,7 @@ interface ReviewCardProps {
       coverUrl?: string
     }
     user: {
+      id: string
       username: string
       avatarUrl?: string
     }
@@ -28,15 +30,31 @@ interface ReviewCardProps {
     createdAt: string
   }
   className?: string
+  onEdit?: () => void
+  onDelete?: () => void
 }
 
-export function ReviewCard({ review, className }: ReviewCardProps) {
+export function ReviewCard({ review, className, onEdit, onDelete }: ReviewCardProps) {
   return (
     <div className={cn(
-      'bg-background border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow',
+      'bg-background border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow relative',
       'focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2',
       className
     )}>
+      {/* Actions Menu */}
+      <div className="absolute top-4 right-4">
+        <ReviewActions
+          review={{
+            id: review.id,
+            userId: review.user.id,
+            gameId: review.game.slug,
+            game: review.game
+          }}
+          onEdit={onEdit || (() => {})}
+          onDelete={onDelete || (() => {})}
+        />
+      </div>
+
       {/* Header */}
       <div className="flex items-start space-x-3 mb-4">
         {/* Game Cover */}

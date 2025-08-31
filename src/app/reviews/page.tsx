@@ -9,6 +9,7 @@ async function getReviews() {
       include: {
         user: {
           select: {
+            id: true,
             username: true,
             avatarUrl: true,
           },
@@ -23,7 +24,28 @@ async function getReviews() {
       },
     })
 
-    return reviews
+    return reviews.map(review => ({
+      id: review.id,
+      game: {
+        title: review.game.title,
+        slug: review.game.slug,
+        coverUrl: review.game.coverUrl || undefined,
+      },
+      user: {
+        id: review.user.id,
+        username: review.user.username,
+        avatarUrl: review.user.avatarUrl || undefined,
+      },
+      rating: review.rating,
+      title: review.bodyMd.substring(0, 100) + (review.bodyMd.length > 100 ? '...' : ''), // Create title from body
+      excerpt: review.bodyMd.substring(0, 200) + (review.bodyMd.length > 200 ? '...' : ''), // Create excerpt from body
+      pros: review.pros,
+      cons: review.cons,
+      playtimeHours: review.playtimeHours || 0,
+      upvotesCount: review.upvotesCount,
+      commentCount: 0, // TODO: Add comment count when comments are implemented
+      createdAt: review.createdAt.toISOString(),
+    }))
   } catch (error) {
     console.error('Error fetching reviews:', error)
     return []
