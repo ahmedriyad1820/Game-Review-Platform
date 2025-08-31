@@ -21,8 +21,12 @@ export function Header() {
     { name: 'Reviews', href: '/reviews' },
     { name: 'Lists', href: '/lists' },
     { name: 'Community', href: '/community' },
-    { name: 'Admin', href: '/admin' },
   ]
+
+  // Add admin link only for admin users
+  if (session?.user?.roles?.includes('ADMIN')) {
+    navigation.push({ name: 'Admin', href: '/admin' })
+  }
 
   const handleSignOut = () => {
     signOut({ callbackUrl: '/' })
@@ -69,9 +73,9 @@ export function Header() {
                 <div className="flex items-center space-x-3">
                   <Link href="/profile">
                     <Avatar className="h-8 w-8 cursor-pointer">
-                      <AvatarImage src={session.user?.image || ''} alt={session.user?.name || ''} />
+                      <AvatarImage src={session.user?.image || ''} alt={session.user?.username || ''} />
                       <AvatarFallback>
-                        {session.user?.name?.charAt(0) || session.user?.email?.charAt(0) || 'U'}
+                        {session.user?.username?.charAt(0) || session.user?.email?.charAt(0) || 'U'}
                       </AvatarFallback>
                     </Avatar>
                   </Link>
@@ -79,7 +83,7 @@ export function Header() {
                   {/* Desktop User Menu */}
                   <div className="hidden md:flex items-center space-x-2">
                     <span className="text-sm font-medium text-foreground">
-                      {session.user?.name || session.user?.email}
+                      {session.user?.username || session.user?.email}
                     </span>
                     <Button
                       variant="ghost"
@@ -150,14 +154,14 @@ export function Header() {
               <div className="border-t pt-4 space-y-2">
                 <div className="flex items-center space-x-3 px-3 py-2">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={session.user?.image || ''} alt={session.user?.name || ''} />
+                    <AvatarImage src={session.user?.image || ''} alt={session.user?.username || ''} />
                     <AvatarFallback>
-                      {session.user?.name?.charAt(0) || session.user?.email?.charAt(0) || 'U'}
+                      {session.user?.username?.charAt(0) || session.user?.email?.charAt(0) || 'U'}
                     </AvatarFallback>
                   </Avatar>
                   <div>
                     <p className="text-sm font-medium text-foreground">
-                      {session.user?.name || session.user?.email}
+                      {session.user?.username || session.user?.email}
                     </p>
                     <p className="text-xs text-muted-foreground">Signed in</p>
                   </div>
