@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar'
 import { Button } from '@/components/ui/Button'
 import { Gamepad2, Star, Calendar, Users, Settings } from 'lucide-react'
+import { EditProfileModal } from '@/components/profile/EditProfileModal'
 
 interface UserProfile {
   id: string
@@ -29,6 +30,7 @@ export default function ProfilePage() {
   const router = useRouter()
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
   useEffect(() => {
     if (status === 'loading') return
@@ -55,6 +57,10 @@ export default function ProfilePage() {
 
     fetchProfile()
   }, [session, status, router])
+
+  const handleProfileUpdate = (updatedProfile: UserProfile) => {
+    setProfile(updatedProfile)
+  }
 
   if (status === 'loading' || isLoading) {
     return (
@@ -122,7 +128,11 @@ export default function ProfilePage() {
             </div>
             
             <div className="flex space-x-3">
-              <Button variant="outline" size="sm">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setIsEditModalOpen(true)}
+              >
                 <Settings className="h-4 w-4 mr-2" />
                 Edit Profile
               </Button>
@@ -193,6 +203,16 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* Edit Profile Modal */}
+      {profile && (
+        <EditProfileModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          profile={profile}
+          onProfileUpdate={handleProfileUpdate}
+        />
+      )}
     </div>
   )
 }
