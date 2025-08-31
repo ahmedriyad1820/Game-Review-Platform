@@ -8,6 +8,7 @@ import { FeaturedGames } from '@/components/home/FeaturedGames'
 import { RecentReviews } from '@/components/home/RecentReviews'
 import { StatsSection } from '@/components/home/StatsSection'
 import { CTASection } from '@/components/home/CTASection'
+import { AdminStatsSection } from '@/components/home/AdminStatsSection'
 
 export default function HomePage() {
   return (
@@ -17,6 +18,9 @@ export default function HomePage() {
 
       {/* Stats Section */}
       <StatsSection />
+
+      {/* Admin Stats Section - Only visible to admins */}
+      <AdminStatsSection />
 
       {/* Featured Games */}
       <FeaturedGames />

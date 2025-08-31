@@ -6,6 +6,7 @@ import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import { QueryProvider } from '@/components/providers/QueryProvider'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
+import { FloatingAdminButton } from '@/components/ui/FloatingAdminButton'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -86,6 +87,7 @@ export default function RootLayout({
                   {children}
                 </main>
                 <Footer />
+                <FloatingAdminButton />
               </div>
             </QueryProvider>
           </ThemeProvider>

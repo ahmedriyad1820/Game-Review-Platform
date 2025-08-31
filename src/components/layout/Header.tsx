@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useSession, signOut } from 'next-auth/react'
-import { Search, Menu, X, Sun, Moon, Monitor, User, LogOut, Settings, Gamepad2 } from 'lucide-react'
+import { Search, Menu, X, Sun, Moon, Monitor, User, LogOut, Settings, Gamepad2, Shield } from 'lucide-react'
 import { useTheme } from '@/components/providers/ThemeProvider'
 import { cn } from '@/lib/utils'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
@@ -42,6 +42,18 @@ export function Header() {
               <Gamepad2 className="h-8 w-8 text-primary" />
               <span className="text-xl font-bold text-foreground">GameReview</span>
             </Link>
+            
+            {/* Admin Quick Access Button - Only visible to admins */}
+            {session?.user?.roles?.includes('ADMIN') && (
+              <div className="ml-6">
+                <Link href="/admin">
+                  <Button size="sm" variant="default" className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white shadow-lg">
+                    <Shield className="mr-2 h-4 w-4" />
+                    Admin Panel
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* Desktop Navigation */}

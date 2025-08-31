@@ -2,13 +2,64 @@
 
 import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
-import { Gamepad2, Star, Users, TrendingUp, Shield } from 'lucide-react'
+import { Gamepad2, Star, Users, TrendingUp, Shield, Settings, BarChart3, UserCheck, GamepadIcon } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 
 export function HeroSection() {
+  const { data: session } = useSession()
+  const isAdmin = session?.user?.roles?.includes('ADMIN')
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-secondary/10 py-20 sm:py-32">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl text-center">
+          {/* Admin Quick Access - Only visible to admins */}
+          {isAdmin && (
+            <div className="mb-8 p-6 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-2xl border border-primary/30">
+              <div className="flex items-center justify-center space-x-2 mb-4">
+                <Shield className="h-8 w-8 text-primary" />
+                <h2 className="text-2xl font-bold text-foreground">Admin Dashboard</h2>
+              </div>
+              <p className="text-muted-foreground mb-6">
+                Quick access to platform management tools
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <Link href="/admin/games">
+                  <Button variant="outline" size="sm" className="w-full">
+                    <GamepadIcon className="mr-2 h-4 w-4" />
+                    Games
+                  </Button>
+                </Link>
+                <Link href="/admin/users">
+                  <Button variant="outline" size="sm" className="w-full">
+                    <UserCheck className="mr-2 h-4 w-4" />
+                    Users
+                  </Button>
+                </Link>
+                <Link href="/admin/reviews">
+                  <Button variant="outline" size="sm" className="w-full">
+                    <Star className="mr-2 h-4 w-4" />
+                    Reviews
+                  </Button>
+                </Link>
+                <Link href="/admin/analytics">
+                  <Button variant="outline" size="sm" className="w-full">
+                    <BarChart3 className="mr-2 h-4 w-4" />
+                    Analytics
+                  </Button>
+                </Link>
+              </div>
+              <div className="mt-4">
+                <Link href="/admin">
+                  <Button size="sm" className="bg-primary hover:bg-primary/90">
+                    <Settings className="mr-2 h-4 w-4" />
+                    Full Admin Panel
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          )}
+
           {/* Main Headline */}
           <div className="mb-8">
             <div className="flex items-center justify-center space-x-2 mb-6">
@@ -39,16 +90,6 @@ export function HeroSection() {
               <Button variant="outline" size="lg" className="w-full sm:w-auto">
                 <Users className="mr-2 h-5 w-5" />
                 Join Community
-              </Button>
-            </Link>
-          </div>
-
-          {/* Admin Access Button */}
-          <div className="flex justify-center mb-8">
-            <Link href="/admin">
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-                <Shield className="mr-2 h-4 w-4" />
-                Admin Access
               </Button>
             </Link>
           </div>
