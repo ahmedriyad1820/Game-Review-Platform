@@ -308,7 +308,6 @@ async function main() {
         userId: users[1].id, // RPGMaster
         gameId: games[3].id, // Baldur's Gate 3
         rating: 9.5,
-        title: 'A Masterpiece of Modern RPG Design',
         bodyMd: `Larian Studios has delivered what might be the most impressive RPG I've ever played. The depth of choice, the quality of writing, and the sheer amount of content is staggering.
 
 **What makes this game special:**
@@ -334,7 +333,6 @@ Overall, this is a game that will be talked about for years to come. It sets a n
         userId: users[2].id, // WebSlinger
         gameId: games[4].id, // Spider-Man 2
         rating: 8.8,
-        title: 'Swinging Through New York Never Gets Old',
         bodyMd: `Insomniac has once again captured the essence of being Spider-Man. The web-swinging mechanics are refined, the story is compelling, and the open world feels alive.
 
 **Highlights:**
@@ -360,7 +358,6 @@ This is a fantastic sequel that improves on the original in almost every way.`,
         userId: users[3].id, // HorrorFan
         gameId: games[5].id, // Alan Wake 2
         rating: 8.9,
-        title: 'A Psychological Horror Masterpiece',
         bodyMd: `Remedy has crafted one of the most atmospheric and psychologically unsettling horror games in recent memory. The narrative is complex, the atmosphere is thick, and the scares are genuine.
 
 **What works:**
