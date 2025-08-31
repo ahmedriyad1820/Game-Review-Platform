@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
-import { Gamepad2, Star, Users, TrendingUp } from 'lucide-react'
+import { Gamepad2, Star, Users, TrendingUp, Shield } from 'lucide-react'
 
 export function HeroSection() {
   return (
@@ -39,6 +39,16 @@ export function HeroSection() {
               <Button variant="outline" size="lg" className="w-full sm:w-auto">
                 <Users className="mr-2 h-5 w-5" />
                 Join Community
+              </Button>
+            </Link>
+          </div>
+
+          {/* Admin Access Button */}
+          <div className="flex justify-center mb-8">
+            <Link href="/admin">
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+                <Shield className="mr-2 h-4 w-4" />
+                Admin Access
               </Button>
             </Link>
           </div>

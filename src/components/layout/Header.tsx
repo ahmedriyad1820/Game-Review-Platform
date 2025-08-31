@@ -21,6 +21,7 @@ export function Header() {
     { name: 'Reviews', href: '/reviews' },
     { name: 'Lists', href: '/lists' },
     { name: 'Community', href: '/community' },
+    { name: 'Admin', href: '/admin' },
   ]
 
   const handleSignOut = () => {
